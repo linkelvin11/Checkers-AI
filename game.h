@@ -10,7 +10,7 @@ Board* board = new Board();
 std::vector<Move> moves;
 
 
-public: 
+public:
 Game();
 void play();
 

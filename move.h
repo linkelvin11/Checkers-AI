@@ -8,9 +8,9 @@ class Board;
 class Move
 {
 public:
-	std::vector<Move> nextMoves;
-	Board* board;
-	bool isJump;
+    std::vector<Move> nextMoves;
+    Board* board;
+    bool isJump;
     int start[2];
     int end[2];
     Move();
