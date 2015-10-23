@@ -20,11 +20,11 @@ void Game::printMoves(){
     int e_col;
     int e_row;
     int i = 0;
-	for (std::vector<Move>::iterator it = this->moves.begin(); it != this->moves.end(); it++,i++){
+	for (std::vector<Move>::iterator it = moves.begin(); it != moves.end(); it++,i++){
 		s_col = it->start[0];
 		s_row = 2 * it->start[1];
 		e_col = it->end[0];
-		e_row = it->end[1];
+		e_row = 2 * it->end[1];
         if (s_col % 2) s_row++;
         if (e_col % 2) e_row++;
         std::cout << "Move " << i << ": " <<
