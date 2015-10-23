@@ -6,8 +6,9 @@ Game::Game(){
 }
 
 void Game::play(){
-    Player* p = new Player(true);
+    Player* p = new Player(false);
 	board->init();
+	board->readBoard();
 	board->displayBoard();
 	board->legalMoves(p,this->moves);
 	printMoves();
@@ -20,6 +21,7 @@ void Game::printMoves(){
     int e_col;
     int e_row;
     int i = 0;
+    std::cout << "Total moves available: " << moves.size() << std::endl;
 	for (std::vector<Move>::iterator it = moves.begin(); it != moves.end(); it++,i++){
 		s_col = it->start[0];
 		s_row = 2 * it->start[1];

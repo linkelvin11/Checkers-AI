@@ -5,6 +5,8 @@
 #include "move.h"
 #include "player.h"
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <vector>
 
 
@@ -22,6 +24,7 @@ public:
     void makeMove(int start[], int end[], bool isJump);
     void init();
     const char* uniPiece(int piece);
+    void readBoard();
     void displayBoard();
 };
 

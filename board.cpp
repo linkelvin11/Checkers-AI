@@ -34,7 +34,7 @@ void Board::checkMoves(Player *p, std::vector<Move> &moves)
     int king = p->king;
     for(int row = 0; row < 4; row++) { // go through rows
         for(int col = 0; col < 8; col++) { // go through columns
-            if (board[col][row]) {
+            if (board[col][row] == p->men || board[col][row] == p->king) {
                 if (!(col % 2)) { // even columns (left side)
                     // check top right
                     if(!board[col+1][row] && (up || board[col][row] == king)) {
@@ -86,7 +86,7 @@ bool Board::checkJumps(Player *p, std::vector<Move> &moves) {
     int oking = (p->men == 1 ? 4 : 2);
     for(int row = 0; row < 4; row++) { // go through rows
         for(int col = 0; col < 8; col++) { // go through columns
-            if (board[col][row]) {
+            if (board[col][row] == p->men || board[col][row] == p->king) {
                 if (!(col % 2)) { // even columns (left side)
                     // check top right
                     if( (row+1)%4 && (col+2)%8 &&
@@ -223,4 +223,44 @@ void Board::displayBoard() {
     }
     std::cout << std::endl;
     return;
+}
+
+void Board::readBoard() {
+    std::string infile;
+    std::string line;
+    char c;
+    std::cout << "do you want to read in a file? (filename/n) \n";
+    std::cin >> infile;
+    if (!infile.compare("n"))
+        return;
+    std::cout << "opening " << infile << std::endl;
+
+    std::ifstream ifh(infile,std::ifstream::in);
+
+    int r = 4;
+    for(int i = 0; i < 8; i++ ) {
+        std::cout << i << std::endl;
+        if (!(i%2)){
+            r--;
+            std::cout << "r = " << r << std::endl;
+        }
+
+        for(int j = 0; j < 5; j++) {
+            if (ifh.get(c)){
+                if (c == '\n')
+                    break;
+                if(!(i%2)){ // even line
+                    this->board[j*2+1][r] = c-48;
+                }
+                else {
+                    this->board[j*2][r] = c-48;
+                }
+            }
+            else {
+                std::cout << "ERROR: your file has too few characters";
+                exit(1);
+            }
+        }
+    }
+
 }
