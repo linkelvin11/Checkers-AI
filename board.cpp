@@ -1,31 +1,6 @@
 
-#include "board.h"  
+#include "board.h"
 #include <iostream>
-
-Move::Move() {
-    start[0] = 0;
-    start[1] = 0;
-    end[0] = 0;
-    end[1] = 0;
-}
-
-Move::Move(int startcol, int startrow, int endcol, int endrow) {
-    start[0] = startcol;
-    start[1] = startrow;
-    end[0] = endcol;
-    end[1] = endrow;
-}
-
-Player::Player(bool first) {
-    if (first) {
-        men = 1;
-        king = 2;
-        return;
-    }
-    men = 3;
-    king = 4;
-    return;
-}
 
 Board::Board() {
     moves = new Move[32];
@@ -68,29 +43,24 @@ bool Board::checkMoves(Player *p)
                         this->moves[moveCtr++] = Move(col,row,col+1,row);
                         std::cout << col << row << col+1 << row << std::endl;
                     }
-                    else {} //check jump
                     // check bottom right
                     if(row && !this->board[col+1][row-1] && (down || this->board[col][row] == king)) {
                         this->moves[moveCtr++] = Move(col,row,col+1,row-1);
                     }
-                    else {} //check jump
                     // check top left
                     if(col && !this->board[col-1][row] && (up || this->board[col][row] == king)) {
                         this->moves[moveCtr++] = Move(col,row,col-1,row);
                     }
-                    else {} //check jump
                     //check bottom left
                     if(col && row && !this->board[col-1][row-1] && (down || this->board[col][row] == king)) {
                         this->moves[moveCtr++] = Move(col,row,col-1,row-1);
                     }
-                    else {} //check jump
                 }
                 else { // odd columns (right side)
                     // check bottom right
                     if ((col+1)%4 && !this->board[col+1][row] && (down || this->board[col][row] == king)) {
                         this->moves[moveCtr++] = Move(col,row,col+1,row);
                     }
-                    else {} //check jumps
                     // check top right
                     if ((col+1)%4 && !this->board[col+1][row+1] && (up || this->board[col][row] == king)) {
                         this->moves[moveCtr++] = Move(col,row,col+1,row+1);
@@ -99,12 +69,10 @@ bool Board::checkMoves(Player *p)
                     if (!this->board[col-1][row] && (down || this->board[col][row] == king)) {
                         this->moves[moveCtr++] = Move(col,row,col-1,row);
                     }
-                    else {} //check jumps
                     //check top left
                     if ((row+1)%4 && !this->board[col-1][row+1] && (up || this->board[col][row] == king)) {
                         this->moves[moveCtr++] = Move(col,row,col-1,row+1);
                     }
-                    else {} //check jumps
                 }
             }
         }
@@ -129,9 +97,20 @@ bool Board::legalMoves(int** board, Player *p) {
 }
 
 void Board::printMoves(){
+    int s_col;
+    int s_row;
+    int e_col;
+    int e_row;
     for (int i = 0; i < this->moveCtr; i++){
-        std::cout << this->moves[i].start[0] << this->moves[i].start[1] <<
-         ',' << this->moves[i].end[0] << this->moves[i].end[1] << std::endl;
+        s_col = this->moves[i].start[0];
+        s_row = 2 * this->moves[i].start[1];
+        e_col = this->moves[i].end[0];
+        e_row = 2 * this->moves[i].end[1];
+        if (s_col % 2) s_row++;
+        if (e_col % 2) e_row++;
+        std::cout << "Move " << i << ": " <<
+        '(' << s_col << ',' <<  s_row << ')' <<
+        ',' << '(' << e_col << ',' <<  e_row << ')' << std::endl;
     }
 }
 
@@ -185,7 +164,7 @@ void Board::displayBoard() {
 }
 
 int main() {
-    Player* p = new Player(true);
+    Player* p = new Player(false);
     Board* b = new Board();
     b->init();
     b->displayBoard();

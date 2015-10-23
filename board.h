@@ -1,22 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-class Move
-{
-public:
-    int start[2];
-    int end[2];
-    Move();
-    Move(int startcol, int startrow, int endcol, int endrow);
-};
-
-class Player
-{
-public:
-    int men;
-    int king;
-    Player(bool first);
-};
+#include "move.h"
+#include "player.h"
 
 class Board
 {
