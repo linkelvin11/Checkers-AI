@@ -1,6 +1,7 @@
 
 #include "board.h"
-#include <iostream>
+#include <typeinfo>
+
 
 Board::Board() {
     moves = new Move[32];
@@ -27,9 +28,8 @@ void Board::init() {
     }
 }
 
-bool Board::checkMoves(Player *p)
+void Board::checkMoves(Player *p, std::vector<Move> &moves)
 {
-    this->moveCtr = 0;
     bool down = false;
     bool up = false;
     p->men == 1 ? up = true: down = true;
@@ -40,7 +40,58 @@ bool Board::checkMoves(Player *p)
                 if (!(col % 2)) { // even columns (left side)
                     // check top right
                     if(!this->board[col+1][row] && (up || this->board[col][row] == king)) {
-                        this->moves[moveCtr++] = Move(col,row,col+1,row);
+                        moves.push_back(Move(col,row,col+1,row));
+                    }
+                    // check bottom right
+                    if(row && !this->board[col+1][row-1] && (down || this->board[col][row] == king)) {
+                        moves.push_back(Move(col,row,col+1,row-1));
+                    }
+                    // check top left
+                    if(col && !this->board[col-1][row] && (up || this->board[col][row] == king)) {
+                        moves.push_back(Move(col,row,col-1,row));
+                    }
+                    //check bottom left
+                    if(col && row && !this->board[col-1][row-1] && (down || this->board[col][row] == king)) {
+                        moves.push_back(Move(col,row,col-1,row-1));
+                    }
+                }
+                else { // odd columns (right side)
+                    // check bottom right
+                    if ((col+1)%4 && !this->board[col+1][row] && (down || this->board[col][row] == king)) {
+                        moves.push_back(Move(col,row,col+1,row));
+                    }
+                    // check top right
+                    if ((col+1)%4 && !this->board[col+1][row+1] && (up || this->board[col][row] == king)) {
+                        moves.push_back(Move(col,row,col+1,row+1));
+                    }
+                    // check bottom left
+                    if (!this->board[col-1][row] && (down || this->board[col][row] == king)) {
+                        moves.push_back(Move(col,row,col-1,row));
+                    }
+                    //check top left
+                    if ((row+1)%4 && !this->board[col-1][row+1] && (up || this->board[col][row] == king)) {
+                        moves.push_back(Move(col,row,col-1,row+1));
+                    }
+                }
+            }
+        }
+    }
+    return;
+}
+
+bool Board::checkJumps(Player *p, std::vector<Move> &moves) {
+    this->moveCtr = 0;
+    bool down = false;
+    bool up = false;
+    p->men == 1 ? up = true: down = true;
+    int king = p->king;
+    for(int row = 0; row < 4; row++) { // go through rows
+        for(int col = 0; col < 8; col++) { // go through columns
+            if (this->board[col][row]) {
+                if (!(col % 2)) { // even columns (left side)
+                    // check top right
+                    if(this->board[col+1][row] && (up || this->board[col][row] == king)) {
+                        moves.push_back(Move(col,row,col+1,row));
                         std::cout << col << row << col+1 << row << std::endl;
                     }
                     // check bottom right
@@ -77,23 +128,14 @@ bool Board::checkMoves(Player *p)
             }
         }
     }
+    if (moves.size() == 0) // check if any jumps were detected
+        return false;
     return true;
 }
 
-bool Board::checkJumps(int** board, Player *p) {
-    return true;
-}
-
-bool Board::legalMoves(int** board, Player *p) {
-    if (Board::checkJumps(board,p)) {
-        //list the legal jumps
-        return true;
-    }
-    if (Board::checkMoves(p)) {
-        // list the legal moves
-        return true;
-    }
-    return false;
+void Board::legalMoves(Player *p, std::vector<Move> &moves) {
+    checkMoves(p,moves);
+    return;
 }
 
 void Board::printMoves(){
@@ -161,14 +203,4 @@ void Board::displayBoard() {
     }
     std::cout << std::endl;
     return;
-}
-
-int main() {
-    Player* p = new Player(false);
-    Board* b = new Board();
-    b->init();
-    b->displayBoard();
-    b->checkMoves(p);
-    b->printMoves();
-    return 0;
 }

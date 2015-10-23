@@ -1,5 +1,5 @@
-checkers.exe: board.o move.o player.o
-	g++ -o checkers.exe board.o move.o player.o
+checkers.exe: board.o move.o player.o game.cpp game.h
+	g++ -std=c++11 -o checkers.exe game.cpp board.o move.o player.o
 
 board.o: board.cpp board.h
 	g++ -c -std=c++11 board.cpp -o board.o
@@ -10,8 +10,8 @@ move.o: move.cpp move.h
 player.o: player.cpp player.h
 	g++ -c -std=c++11 player.cpp -o player.o
 
-debug: board.o
-	g++ -g -o checkersDebug.exe board.o
+debug: board.o move.o player.o game.cpp game.h
+	g++ -g -std=c++11 -o checkersDebug.exe game.cpp move.cpp board.cpp player.cpp
 
 clean:
 	rm -f *.exe *.o *.stackdump *~
