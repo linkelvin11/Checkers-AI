@@ -20,18 +20,19 @@ public:
 
 class Board
 {
-    int b[8][4] = {};
+
     int moveCtr;
     Move* moves;
 public:
-
+    int board[8][4] = {};
     Board();
     ~Board();
-    bool checkMoves(int** board, Player *p);
+    bool checkMoves(Player *p);
     bool checkJumps(int** board, Player *p);
     bool legalMoves(int** board, Player *p);
     int makeMove(int start, int end, int** b);
-    void init(Player *p);
+    void printMoves();
+    void init();
     const char* uniPiece(int piece);
     void displayBoard();
 };
