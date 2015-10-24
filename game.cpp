@@ -1,5 +1,6 @@
 #include "game.h"
 #include <iostream>
+#include <string>
 #include <cstdlib>
 #include <unistd.h>
 
@@ -27,7 +28,9 @@ void Game::play(){
         else usleep(sleeptime);
         if (moves.size() == 0)
         {
-            std::cout << "game over\n";
+            std::string loser;
+            currentPlayer == first? loser = "black": loser = "white";
+            std::cout << "game over. " << loser << " loses.\n";
             return;
         }
         if (currentPlayer->isComputer)
@@ -36,8 +39,8 @@ void Game::play(){
             std::cout << "type in which move you'd like\n";
             std::cin >> moveNumber;
         }
-        //board->makeMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
-        board->makeMove(&moves[moveNumber]);
+        //board->makeSingleMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
+        board->makeSingleMove(&moves[moveNumber]);
         if (moves[moveNumber].isJump) {
             col = moves[moveNumber].end[0];
             row = moves[moveNumber].end[1];
@@ -55,8 +58,8 @@ void Game::play(){
                     }
                 }
                 while (moveNumber >= moves.size());
-                //board->makeMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
-                board->makeMove(&moves[moveNumber]);
+                //board->makeSingleMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
+                board->makeSingleMove(&moves[moveNumber]);
                 col = moves[moveNumber].end[0];
                 row = moves[moveNumber].end[1];
                 moves.clear();

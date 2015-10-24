@@ -14,8 +14,10 @@ Move::Move(int startcol, int startrow, int endcol, int endrow, Board* b) {
     end[0] = endcol;
     end[1] = endrow;
     isJump = false;
-    this->board = b;
-    //board->makeMove(start,end,Jump);
+    board = new Board();
+    board->copyBoard(b);
+    board->makeSingleMove(this);
+    //board->makeSingleMove(start,end,Jump);
 }
 
 Move::Move(int startcol, int startrow, int midcol, int midrow, int endcol, int endrow, bool Jump, Board* b) {
@@ -26,6 +28,8 @@ Move::Move(int startcol, int startrow, int midcol, int midrow, int endcol, int e
     end[0] = endcol;
     end[1] = endrow;
     isJump = Jump;
-    this->board = b;
-    //board->makeMove(start,end,Jump);
+    board = new Board();
+    board->copyBoard(b);
+    board->makeSingleMove(this);
+    //board->makeSingleMove(start,end,Jump);
 }

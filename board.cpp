@@ -201,9 +201,21 @@ void Board::kingMe(int col, int row){
 
 void Board::makeMove(Move* move) {
     if (move->isJump){
+        this->copyBoard(move->board);
+    }
+    else {
+        board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
+        board[move->start[0]][move->start[1]] = 0;
+    }
+    this->kingMe(move->end[0],move->end[1]);
+}
+
+void Board::makeSingleMove(Move* move) {
+    if (move->isJump){
         board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
         board[move->start[0]][move->start[1]] = 0;
         board[move->middle[0]][move->middle[1]] = 0;
+        //this->copyBoard(move->board);
     }
     else {
         board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
@@ -224,6 +236,14 @@ const char* Board::uniPiece(int piece) {
             return "\u25C9";
         case 4://red king
             return "\u265A";
+    }
+}
+
+void Board::copyBoard(Board* src){
+    for (int row = 0; row < 4; row++){
+        for (int col = 0; col < 8; col++){
+            this->board[col][row] = src->board[col][row];
+        }
     }
 }
 

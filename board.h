@@ -25,8 +25,10 @@ public:
     void kingMe(int row, int col);
     void makeMove(int start[], int middle[], int end[], bool isJump);
     void makeMove(Move *move);
+    void makeSingleMove(Move *move);
     void init();
     const char* uniPiece(int piece);
+    void copyBoard(Board *src);
     void readBoard();
     void displayBoard();
 };
