@@ -38,37 +38,37 @@ void Board::checkMoves(Player *p, std::vector<Move> &moves)
                 if (!(col % 2)) { // even columns (left side)
                     // check top right
                     if(!board[col+1][row] && (up || board[col][row] == king)) {
-                        moves.push_back(Move(col,row,col+1,row,false,this));
+                        moves.push_back(Move(col,row,col+1,row,this));
                     }
                     // check bottom right
                     if(row && !board[col+1][row-1] && (down || board[col][row] == king)) {
-                        moves.push_back(Move(col,row,col+1,row-1,false,this));
+                        moves.push_back(Move(col,row,col+1,row-1,this));
                     }
                     // check top left
                     if(col && !board[col-1][row] && (up || board[col][row] == king)) {
-                        moves.push_back(Move(col,row,col-1,row,false,this));
+                        moves.push_back(Move(col,row,col-1,row,this));
                     }
                     //check bottom left
                     if(col && row && !board[col-1][row-1] && (down || board[col][row] == king)) {
-                        moves.push_back(Move(col,row,col-1,row-1,false,this));
+                        moves.push_back(Move(col,row,col-1,row-1,this));
                     }
                 }
                 else { // odd columns (right side)
                     // check bottom right
                     if ((col+1)%8 && !board[col+1][row] && (down || board[col][row] == king)) {
-                        moves.push_back(Move(col,row,col+1,row,false,this));
+                        moves.push_back(Move(col,row,col+1,row,this));
                     }
                     // check top right
                     if ((col+1)%8 && (row+1)%4 && !board[col+1][row+1] && (up || board[col][row] == king)) {
-                        moves.push_back(Move(col,row,col+1,row+1,false,this));
+                        moves.push_back(Move(col,row,col+1,row+1,this));
                     }
                     // check bottom left
                     if (!board[col-1][row] && (down || board[col][row] == king)) {
-                        moves.push_back(Move(col,row,col-1,row,false,this));
+                        moves.push_back(Move(col,row,col-1,row,this));
                     }
                     //check top left
                     if ((row+1)%4 && !board[col-1][row+1] && (up || board[col][row] == king)) {
-                        moves.push_back(Move(col,row,col-1,row+1,false,this));
+                        moves.push_back(Move(col,row,col-1,row+1,this));
                     }
                 }
             }
@@ -91,7 +91,7 @@ bool Board::checkJumps(Player *p, std::vector<Move> &moves) {
     return true;
 }
 
-void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
+bool Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
     bool down = false;
     bool up = false;
     p->men == 1 ? up = true: down = true;
@@ -106,7 +106,7 @@ void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
                 !board[col+2][row+1] &&
                 (up || board[col][row] == king))
             {
-                moves.push_back(Move(col,row,col+2,row+1,true,this));
+                moves.push_back(Move(col,row,col+1,row,col+2,row+1,true,this));
             }
             // check bottom right
             if(row && (col+2)%8 &&
@@ -114,7 +114,7 @@ void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
                 !board[col+2][row-1] &&
                 (down || board[col][row] == king))
             {
-                moves.push_back(Move(col,row,col+2,row-1,true,this));
+                moves.push_back(Move(col,row,col+1,row-1,col+2,row-1,true,this));
             }
             // check top left
             if(col && (row+1)%4 &&
@@ -122,7 +122,7 @@ void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
                 !board[col-2][row+1] &&
                 (up || board[col][row] == king))
             {
-                moves.push_back(Move(col,row,col-2,row+1,true,this));
+                moves.push_back(Move(col,row,col-1,row,col-2,row+1,true,this));
             }
             //check bottom left
             if(col && row &&
@@ -130,7 +130,7 @@ void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
                 !board[col-2][row-1] &&
                 (down || board[col][row] == king)) 
             {
-                moves.push_back(Move(col,row,col-2,row-1,true,this));
+                moves.push_back(Move(col,row,col-1,row-1,col-2,row-1,true,this));
             }
         }
         else { // odd columns (right side)
@@ -140,7 +140,7 @@ void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
                 !board[col+2][row-1] &&
                 (down || board[col][row] == king))
             {
-                moves.push_back(Move(col,row,col+2,row-1,true,this));
+                moves.push_back(Move(col,row,col+1,row,col+2,row-1,true,this));
             }
             // check top right
             if ((col+1)%8 && (row+1)%4 &&
@@ -148,7 +148,7 @@ void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
                 !board[col+2][row+1] &&
                 (up || board[col][row] == king)) 
             {
-                moves.push_back(Move(col,row,col+2,row+1,true,this));
+                moves.push_back(Move(col,row,col+1,row+1,col+2,row+1,true,this));
             }
             // check bottom left
             if (row && col-1 &&
@@ -156,7 +156,7 @@ void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
                 !board[col-2][row-1] &&
                 (down || board[col][row] == king)) 
             {
-                moves.push_back(Move(col,row,col-2,row-1,true,this));
+                moves.push_back(Move(col,row,col-1,row,col-2,row-1,true,this));
             }
             //check top left
             if ((row+1)%4 && col-1 &&
@@ -164,10 +164,12 @@ void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
                 !board[col-2][row+1] &&
                 (up || board[col][row] == king)) 
             {
-                moves.push_back(Move(col,row,col-2,row+1,true,this));
+                moves.push_back(Move(col,row,col-1,row+1,col-2,row+1,true,this));
             }
         }
     }
+    if (moves.size()) return true;
+    return false;
 }
 
 void Board::legalMoves(Player *p, std::vector<Move> &moves) {
@@ -176,18 +178,44 @@ void Board::legalMoves(Player *p, std::vector<Move> &moves) {
     return;
 }
 
-void Board::makeMove(int start[], int end[], bool isJump) {
+void Board::makeMove(int start[], int middle[], int end[], bool isJump) {
     board[end[0]][end[1]] = board[start[0]][start[1]];
     board[start[0]][start[1]] = 0;
     if (isJump){
+        board[end[0]][end[1]] = board[start[0]][start[1]];
+        board[start[0]][start[1]] = 0;
+        board[middle[0]][start[0]] = 0;
     }
 
+}
+
+void Board::kingMe(int col, int row){
+    if (col%2){
+        if(row == 3 && board[col][row] == 1)
+            board[col][row] = 2;
+    }
+    else if(row == 0 && board[col][row] == 3){
+        board[col][row] = 4;
+    }
+}
+
+void Board::makeMove(Move* move) {
+    if (move->isJump){
+        board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
+        board[move->start[0]][move->start[1]] = 0;
+        board[move->middle[0]][move->middle[1]] = 0;
+    }
+    else {
+        board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
+        board[move->start[0]][move->start[1]] = 0;
+    }
+    this->kingMe(move->end[0],move->end[1]);
 }
 
 const char* Board::uniPiece(int piece) {
     switch(piece) {
         case 0://empty
-            return "\u25A3";
+            return "\u00B7";
         case 1://black piece
             return "\u25CE";
         case 2://black king
@@ -243,12 +271,9 @@ void Board::readBoard() {
 
     int r = 4;
     for(int i = 0; i < 8; i++ ) {
-        std::cout << i << std::endl;
         if (!(i%2)){
             r--;
-            std::cout << "r = " << r << std::endl;
         }
-
         for(int j = 0; j < 5; j++) {
             if (ifh.get(c)){
                 if (c == '\n')

@@ -1,5 +1,9 @@
 #include "game.h"
 #include <iostream>
+#include <cstdlib>
+#include <unistd.h>
+
+unsigned int sleeptime = 500000;
 
 Game::Game(){
     board = new Board();
@@ -8,8 +12,10 @@ Game::Game(){
 void Game::play(){
     int moveCtr = 0;
     int moveNumber;
-    Player* first = new Player(true);
-    Player* second = new Player(false);
+    int col;
+    int row;
+    Player* first = new Player(true,true);
+    Player* second = new Player(false,true);
     Player* currentPlayer = first;
     board->init();
     board->readBoard();
@@ -17,34 +23,45 @@ void Game::play(){
         ++moveCtr%2?currentPlayer = first:currentPlayer = second;
         board->displayBoard();
         board->legalMoves(currentPlayer,moves);
-        printMoves();
+        if (!currentPlayer->isComputer)printMoves();
+        else usleep(sleeptime);
         if (moves.size() == 0)
         {
             std::cout << "game over\n";
             return;
         }
-        std::cout << "type in which move you'd like\n";
-        std::cin >> moveNumber;
-        if (moveNumber > 1000)
-            return;
-        if (moveNumber < moves.size()){
-            std::cout << "yes, this is a valid move\n";
-            board->makeMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
+        if (currentPlayer->isComputer)
+            moveNumber = rand() % moves.size();
+        else for (moveNumber = 1000; moveNumber >= moves.size();) {
+            std::cout << "type in which move you'd like\n";
+            std::cin >> moveNumber;
+        }
+        //board->makeMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
+        board->makeMove(&moves[moveNumber]);
+        if (moves[moveNumber].isJump) {
+            col = moves[moveNumber].end[0];
+            row = moves[moveNumber].end[1];
             moves.clear();
-            if (moves[moveNumber].isJump) {
-                while (board->checkJumps(currentPlayer,moves)) {
-                    board->displayBoard();
-                    printMoves();
-                    do {
+            while (board->jumpsFrom(currentPlayer,col,row,moves)) {
+                board->displayBoard();
+                if (!currentPlayer->isComputer)printMoves();
+                else usleep(sleeptime);
+                do {
+                    if (currentPlayer->isComputer)
+                        moveNumber = rand() % moves.size();
+                    else {
                         std::cout << "You just jumped! Jump again!\n";
                         std::cin >> moveNumber;
                     }
-                    while (moveNumber >= moves.size());
-                    board->makeMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
-                    moves.clear();
                 }
+                while (moveNumber >= moves.size());
+                //board->makeMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
+                board->makeMove(&moves[moveNumber]);
+                col = moves[moveNumber].end[0];
+                row = moves[moveNumber].end[1];
+                moves.clear();
             }
-        }            
+        }
         moves.clear();
     }
     return;
