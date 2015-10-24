@@ -20,6 +20,7 @@ public:
     ~Board();
     void checkMoves(Player *p, std::vector<Move> &moves);
     bool checkJumps(Player *p, std::vector<Move> &moves);
+    void jumpsFrom(Player *p, int col, int row, std::vector<Move> &moves);
     void legalMoves(Player *p, std::vector<Move> &moves);
     void makeMove(int start[], int end[], bool isJump);
     void init();

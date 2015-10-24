@@ -78,84 +78,9 @@ void Board::checkMoves(Player *p, std::vector<Move> &moves)
 }
 
 bool Board::checkJumps(Player *p, std::vector<Move> &moves) {
-    bool down = false;
-    bool up = false;
-    p->men == 1 ? up = true: down = true;
-    int king = p->king;
-    int omen = (p->men == 1 ? 3 : 1);
-    int oking = (p->men == 1 ? 4 : 2);
     for(int row = 0; row < 4; row++) { // go through rows
         for(int col = 0; col < 8; col++) { // go through columns
-            if (board[col][row] == p->men || board[col][row] == p->king) {
-                if (!(col % 2)) { // even columns (left side)
-                    // check top right
-                    if( (row+1)%4 && (col+2)%8 &&
-                        (board[col+1][row] == omen || board[col+1][row] == oking) &&
-                        !board[col+2][row+1] &&
-                        (up || board[col][row] == king))
-                    {
-                        moves.push_back(Move(col,row,col+2,row+1,true,this));
-                    }
-                    // check bottom right
-                    if(row && (col+2)%8 &&
-                        (board[col+1][row-1] == omen || board[col+1][row-1] == oking) &&
-                        !board[col+2][row-1] &&
-                        (down || board[col][row] == king))
-                    {
-                        moves.push_back(Move(col,row,col+2,row-1,true,this));
-                    }
-                    // check top left
-                    if(col && (row+1)%4 &&
-                        (board[col-1][row] == omen || board[col-1][row] == oking) &&
-                        !board[col-2][row+1] &&
-                        (up || board[col][row] == king))
-                    {
-                        moves.push_back(Move(col,row,col-2,row+1,true,this));
-                    }
-                    //check bottom left
-                    if(col && row &&
-                        (board[col-1][row-1] == omen || board[col-1][row-1] == oking) &&
-                        !board[col-2][row-1] &&
-                        (down || board[col][row] == king)) 
-                    {
-                        moves.push_back(Move(col,row,col-2,row-1,true,this));
-                    }
-                }
-                else { // odd columns (right side)
-                    // check bottom right
-                    if ((col+1)%8 && row &&
-                        (board[col+1][row] == omen || board[col+1][row] == oking) &&
-                        !board[col+2][row-1] &&
-                        (down || board[col][row] == king))
-                    {
-                        moves.push_back(Move(col,row,col+2,row-1,true,this));
-                    }
-                    // check top right
-                    if ((col+1)%8 && (row+1)%4 &&
-                        (board[col+1][row+1] == omen || board[col+1][row+1] == oking) &&
-                        !board[col+2][row+1] &&
-                        (up || board[col][row] == king)) 
-                    {
-                        moves.push_back(Move(col,row,col+2,row+1,true,this));
-                    }
-                    // check bottom left
-                    if (row && col-1 &&
-                        (board[col-1][row] == omen || board[col-1][row] == oking) &&
-                        !board[col-2][row-1] &&
-                        (down || board[col][row] == king)) 
-                    {
-                        moves.push_back(Move(col,row,col-2,row-1,true,this));
-                    }
-                    //check top left
-                    if ((row+1)%4 && col-1 &&
-                        (board[col-1][row+1] == omen || board[col-1][row+1] == oking) &&
-                        !board[col-2][row+1] &&
-                        (up || board[col][row] == king)) 
-                    {
-                        moves.push_back(Move(col,row,col-2,row+1,true,this));
-                    }
-                }
-            }
+            this->jumpsFrom(p,col,row,moves);
         }
     }
     if (moves.size() == 0) // check if any jumps were detected
@@ -164,6 +89,85 @@ bool Board::checkJumps(Player *p, std::vector<Move> &moves) {
     //     it->board->checkJumps(p,it->nextMoves);
     // }
     return true;
+}
+
+void Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
+    bool down = false;
+    bool up = false;
+    p->men == 1 ? up = true: down = true;
+    int king = p->king;
+    int omen = (p->men == 1 ? 3 : 1);
+    int oking = (p->men == 1 ? 4 : 2);
+    if (board[col][row] == p->men || board[col][row] == p->king) {
+        if (!(col % 2)) { // even columns (left side)
+            // check top right
+            if( (row+1)%4 && (col+2)%8 &&
+                (board[col+1][row] == omen || board[col+1][row] == oking) &&
+                !board[col+2][row+1] &&
+                (up || board[col][row] == king))
+            {
+                moves.push_back(Move(col,row,col+2,row+1,true,this));
+            }
+            // check bottom right
+            if(row && (col+2)%8 &&
+                (board[col+1][row-1] == omen || board[col+1][row-1] == oking) &&
+                !board[col+2][row-1] &&
+                (down || board[col][row] == king))
+            {
+                moves.push_back(Move(col,row,col+2,row-1,true,this));
+            }
+            // check top left
+            if(col && (row+1)%4 &&
+                (board[col-1][row] == omen || board[col-1][row] == oking) &&
+                !board[col-2][row+1] &&
+                (up || board[col][row] == king))
+            {
+                moves.push_back(Move(col,row,col-2,row+1,true,this));
+            }
+            //check bottom left
+            if(col && row &&
+                (board[col-1][row-1] == omen || board[col-1][row-1] == oking) &&
+                !board[col-2][row-1] &&
+                (down || board[col][row] == king)) 
+            {
+                moves.push_back(Move(col,row,col-2,row-1,true,this));
+            }
+        }
+        else { // odd columns (right side)
+            // check bottom right
+            if ((col+1)%8 && row &&
+                (board[col+1][row] == omen || board[col+1][row] == oking) &&
+                !board[col+2][row-1] &&
+                (down || board[col][row] == king))
+            {
+                moves.push_back(Move(col,row,col+2,row-1,true,this));
+            }
+            // check top right
+            if ((col+1)%8 && (row+1)%4 &&
+                (board[col+1][row+1] == omen || board[col+1][row+1] == oking) &&
+                !board[col+2][row+1] &&
+                (up || board[col][row] == king)) 
+            {
+                moves.push_back(Move(col,row,col+2,row+1,true,this));
+            }
+            // check bottom left
+            if (row && col-1 &&
+                (board[col-1][row] == omen || board[col-1][row] == oking) &&
+                !board[col-2][row-1] &&
+                (down || board[col][row] == king)) 
+            {
+                moves.push_back(Move(col,row,col-2,row-1,true,this));
+            }
+            //check top left
+            if ((row+1)%4 && col-1 &&
+                (board[col-1][row+1] == omen || board[col-1][row+1] == oking) &&
+                !board[col-2][row+1] &&
+                (up || board[col][row] == king)) 
+            {
+                moves.push_back(Move(col,row,col-2,row+1,true,this));
+            }
+        }
+    }
 }
 
 void Board::legalMoves(Player *p, std::vector<Move> &moves) {
