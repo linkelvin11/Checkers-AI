@@ -16,7 +16,6 @@ void play();
 
 void printMoves();
 
-
 };
 
 

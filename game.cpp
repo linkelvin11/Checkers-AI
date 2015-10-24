@@ -6,21 +6,45 @@ Game::Game(){
 }
 
 void Game::play(){
-    int moveCtr;
+    int moveCtr = 0;
     int moveNumber;
     Player* first = new Player(true);
     Player* second = new Player(false);
+    Player* currentPlayer = first;
     board->init();
     board->readBoard();
-
     while(true){
+        ++moveCtr%2?currentPlayer = first:currentPlayer = second;
         board->displayBoard();
-        board->legalMoves(second,this->moves);
+        board->legalMoves(currentPlayer,moves);
         printMoves();
+        if (moves.size() == 0)
+        {
+            std::cout << "game over\n";
+            return;
+        }
         std::cout << "type in which move you'd like\n";
         std::cin >> moveNumber;
         if (moveNumber > 1000)
             return;
+        if (moveNumber < moves.size()){
+            std::cout << "yes, this is a valid move\n";
+            board->makeMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
+            moves.clear();
+            if (moves[moveNumber].isJump) {
+                while (board->checkJumps(currentPlayer,moves)) {
+                    board->displayBoard();
+                    printMoves();
+                    do {
+                        std::cout << "You just jumped! Jump again!\n";
+                        std::cin >> moveNumber;
+                    }
+                    while (moveNumber >= moves.size());
+                    board->makeMove(moves[moveNumber].start,moves[moveNumber].end,moves[moveNumber].isJump);
+                    moves.clear();
+                }
+            }
+        }            
         moves.clear();
     }
     return;

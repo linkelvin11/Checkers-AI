@@ -173,7 +173,7 @@ void Board::legalMoves(Player *p, std::vector<Move> &moves) {
 }
 
 void Board::makeMove(int start[], int end[], bool isJump) {
-    board[end[0]][start[1]] = board[start[0]][start[1]];
+    board[end[0]][end[1]] = board[start[0]][start[1]];
     board[start[0]][start[1]] = 0;
     if (isJump){
     }
