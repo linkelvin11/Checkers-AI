@@ -3,6 +3,12 @@
 
 #include "board.h"
 #include <vector>
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <climits>
+#include <unistd.h>
+#include <chrono>
 
 class Game {
 
@@ -15,6 +21,7 @@ Game();
 void play();
 
 void printMoves();
+void alphaBeta_init(Player *maxplayer, Player *minplayer, int maxdepth);
 
 };
 

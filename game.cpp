@@ -1,10 +1,6 @@
 #include "game.h"
-#include <iostream>
-#include <string>
-#include <cstdlib>
-#include <unistd.h>
+#include "globals.h"
 
-unsigned int sleeptime = 500000;
 
 Game::Game(){
     board = new Board();
@@ -28,15 +24,27 @@ void Game::play(){
     std::cin>> initAI;
     if (initAI[0] == 'y')
         secondAI = true;
-
+    // if (firstAI || secondAI)
+    // {
+    //     std::cout<<"what is the AI time limit? (float seconds)\n";
+    //     std::cin>>timeLimit;
+    //     returnTime = timeLimit * 0.99;
+    //     //std::cout<<"The time limit is "<<timeLimit<<". The return time is "<<returnTime<<std::endl;
+    // }
+    auto start = std::chrono::high_resolution_clock::now();
 
     Player* first = new Player(true,firstAI);
     Player* second = new Player(false,secondAI);
     Player* currentPlayer = first;
+    Player* opponent = second;
     board->init();
     board->readBoard();
+    auto elapsed = std::chrono::high_resolution_clock::now() - start;
+    std::cout<<elapsed.count()<<std::endl;
+
     while(true){
         ++moveCtr%2?currentPlayer = first:currentPlayer = second;
+        moveCtr%2?opponent = second:opponent = first;
         board->displayBoard();
         board->legalMoves(currentPlayer,moves);
         if (!currentPlayer->isComputer)printMoves();
@@ -48,13 +56,26 @@ void Game::play(){
             std::cout << "game over. " << loser << " loses.\n";
             return;
         }
-        if (board->checkJumps(currentPlayer,moves)){
-            board->terminalJumps(currentPlayer,moves);
-            printMoves();
-        }
-        return;
-        if (currentPlayer->isComputer)
+        // if (board->checkJumps(currentPlayer,moves)){
+        //     board->terminalJumps(currentPlayer,moves);
+        //     printMoves();
+        // }
+        if (currentPlayer->isComputer){
+            if (currentPlayer == first){
+                if (moves[0].isJump)
+                    board->terminalJumps(currentPlayer,moves);
+                start = std::chrono::high_resolution_clock::now();
+                this->alphaBeta_init(currentPlayer,opponent,10);
+                elapsed = std::chrono::high_resolution_clock::now() - start;
+                std::cout<<"time elapsed: "<<elapsed.count()/1e9<<std::endl;
+                board->makeMove(&*(moves.end()-1));
+                std::cout<<"Cleaning search tree\n";
+                moves.clear();
+                continue;
+            }
             moveNumber = rand() % moves.size();
+        }
+        
         else for (moveNumber = 1000; moveNumber >= moves.size();) {
             std::cout << "type in which move you'd like\n";
             std::cin >> moveNumber;
@@ -108,6 +129,20 @@ void Game::printMoves(){
         '(' << s_col << ',' <<  s_row << ')' <<
         ',' << '(' << e_col << ',' <<  e_row << ')' << std::endl;
     }
+}
+
+void Game::alphaBeta_init(Player *maxplayer, Player *minplayer, int maxdepth){
+    std::vector<Move>::iterator bestmove = moves.begin();
+    int v = INT_MIN;
+    int alpha = INT_MIN;
+    for(std::vector<Move>::iterator it = moves.begin(); it != moves.end(); it++){
+        v = board->alphaBeta(maxplayer,minplayer,maxplayer,INT_MIN,INT_MAX,maxdepth-1,&*it,false);
+        if (v > alpha){
+            alpha = v;
+            bestmove = it;
+        }
+    }
+    moves.insert(moves.end(),*bestmove);
 }
 
 int main() {

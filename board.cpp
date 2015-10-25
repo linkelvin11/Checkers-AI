@@ -3,6 +3,7 @@
 #include <typeinfo>
 
 
+
 Board::Board() {
     return;
 }
@@ -172,6 +173,7 @@ bool Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
     return false;
 }
 
+// warning: terminal jumps assumes only jumps and no shifts in moves
 void Board::terminalJumps(Player *p, std::vector<Move> &moves){
     for (std::vector<Move>::iterator it = moves.begin(); it != moves.end(); it++){
         if (it->board->jumpsFrom(p,it->end[0],it->end[1],it->nextMoves)){
@@ -183,10 +185,12 @@ void Board::terminalJumps(Player *p, std::vector<Move> &moves){
     }
 }
 
-void Board::legalMoves(Player *p, std::vector<Move> &moves) {
+bool Board::legalMoves(Player *p, std::vector<Move> &moves) {
     if(!checkJumps(p,moves))
         checkMoves(p,moves);
-    return;
+    if (moves.size())
+        return true;
+    return false;
 }
 
 void Board::makeMove(int start[], int middle[], int end[], bool isJump) {
@@ -197,7 +201,7 @@ void Board::makeMove(int start[], int middle[], int end[], bool isJump) {
         board[start[0]][start[1]] = 0;
         board[middle[0]][start[0]] = 0;
     }
-
+    this->kingMe(end[0],end[1]);
 }
 
 void Board::kingMe(int col, int row){
@@ -233,6 +237,39 @@ void Board::makeSingleMove(Move* move) {
         board[move->start[0]][move->start[1]] = 0;
     }
     this->kingMe(move->end[0],move->end[1]);
+}
+
+int Board::alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent, int alpha, int beta, int depth, Move* currentMove, bool maximize){
+    if (depth == 0)
+        return currentMove->board->score(maxPlayer); // replace with score;
+    if (!currentMove->board->legalMoves(currentPlayer,currentMove->nextMoves)){
+        if (currentPlayer == maxPlayer)
+            return INT_MIN;
+        return INT_MAX;
+    }
+    if (currentMove->nextMoves[0].isJump)
+        currentMove->board->terminalJumps(currentPlayer,currentMove->nextMoves);
+    if (maximize){
+        int v = INT_MIN;
+        for(std::vector<Move>::iterator it = currentMove->nextMoves.begin(); it != currentMove->nextMoves.end(); it++){
+            v = std::max(v,alphaBeta(maxPlayer,opponent,currentPlayer,alpha,beta,depth-1,&*it,!maximize));
+            alpha = std::max(alpha,v);
+            if (beta <= alpha)
+                break;
+        }
+        return v;
+    }
+    else {
+        int v = INT_MAX;
+        for(std::vector<Move>::iterator it = currentMove->nextMoves.begin(); it != currentMove->nextMoves.end(); it++){
+            v = std::min(v,alphaBeta(maxPlayer,opponent,currentPlayer,alpha,beta,depth-1,&*it,!maximize));
+            beta = std::min(beta,v);
+            if (beta <= alpha)
+                break;
+        }
+        return v;
+    }
+
 }
 
 const char* Board::uniPiece(int piece) {
@@ -323,4 +360,23 @@ void Board::readBoard() {
         }
     }
 
+}
+
+int Board::score(Player *p){
+    int score = 0;
+    int omen = (p->men == 1?3:1);
+    int oking = (omen == 3?4:2);
+    for (int row = 0; row < 4; row++){
+        for (int col = 0; col < 8; col++){
+            if (board[col][row] == p->men)
+                score++;
+            if (board[col][row] == p->king)
+                score+=2;
+            if (board[col][row] == omen)
+                score--;
+            if (board[col][row] == oking)
+                score-=2;
+        }
+    }
+    return score;
 }
