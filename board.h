@@ -26,6 +26,7 @@ public:
     bool checkJumps(Player *p, std::vector<Move> &moves);
     bool jumpsFrom(Player *p, int col, int row, std::vector<Move> &moves);
     void terminalJumps(Player *p, std::vector<Move> &moves);
+    void recurseJumps(Player*p, std::vector<Move> &currentMoves, std::vector<Move> &moves);
     bool legalMoves(Player *p, std::vector<Move> &moves);
     void kingMe(int row, int col);
     void makeMove(int start[], int middle[], int end[], bool isJump);

@@ -9,6 +9,7 @@
 #include <climits>
 #include <unistd.h>
 #include <chrono>
+#include <cmath>
 
 class Game {
 

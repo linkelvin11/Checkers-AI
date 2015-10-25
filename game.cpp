@@ -42,6 +42,8 @@ void Game::play(){
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     std::cout<<elapsed.count()<<std::endl;
 
+    float elapsed_time;
+
     while(true){
         ++moveCtr%2?currentPlayer = first:currentPlayer = second;
         moveCtr%2?opponent = second:opponent = first;
@@ -61,16 +63,24 @@ void Game::play(){
         //     printMoves();
         // }
         if (currentPlayer->isComputer){
-            if (currentPlayer == first){
-                if (moves[0].isJump)
+            if (true){
+                if (moves[0].isJump){
                     board->terminalJumps(currentPlayer,moves);
+                }
                 start = std::chrono::high_resolution_clock::now();
                 this->alphaBeta_init(currentPlayer,opponent,10);
-                elapsed = std::chrono::high_resolution_clock::now() - start;
-                std::cout<<"time elapsed: "<<elapsed.count()/1e9<<std::endl;
+                elapsed_time = (std::chrono::high_resolution_clock::now() - start).count();
+                elapsed_time = elapsed_time/1e9;
+                
+
+                if (elapsed_time < 0.5){
+                    usleep(floor((0.5-elapsed_time)*1e6));
+                }
+
                 board->makeMove(&*(moves.end()-1));
-                std::cout<<"Cleaning search tree\n";
+                //std::cout<<"Cleaning search tree\n";
                 moves.clear();
+                std::cout<<"time elapsed: "<<elapsed_time<<std::endl;
                 continue;
             }
             moveNumber = rand() % moves.size();

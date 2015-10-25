@@ -175,12 +175,18 @@ bool Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
 
 // warning: terminal jumps assumes only jumps and no shifts in moves
 void Board::terminalJumps(Player *p, std::vector<Move> &moves){
-    for (std::vector<Move>::iterator it = moves.begin(); it != moves.end(); it++){
+    std::vector<Move> currentMoves = moves;
+    moves.clear();
+    recurseJumps(p,currentMoves,moves);
+}
+
+void Board::recurseJumps(Player*p, std::vector<Move> &currentMoves, std::vector<Move> &moves){
+    for (std::vector<Move>::iterator it = currentMoves.begin(); it != currentMoves.end(); it++){
         if (it->board->jumpsFrom(p,it->end[0],it->end[1],it->nextMoves)){
-            moves.erase(it);
-            it->board->jumpsFrom(p,it->end[0],it->end[1],moves);
-            this->terminalJumps(p,moves);
-            break;
+            recurseJumps(p,it->nextMoves,moves);
+        }
+        else {
+            moves.push_back(*it);
         }
     }
 }
