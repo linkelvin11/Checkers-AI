@@ -2,7 +2,7 @@
 #define GLOBALS_H
 
 extern unsigned int sleeptime;
-extern float timeLimit;
-extern float returnTime;
+extern double timeLimit;
+extern double returnTime;
 
 #endif

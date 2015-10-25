@@ -22,7 +22,7 @@ Game();
 void play();
 
 void printMoves();
-void alphaBeta_init(Player *maxplayer, Player *minplayer, int maxdepth);
+Move* alphaBeta_init(Player *maxplayer, Player *minplayer, int maxdepth);
 
 };
 

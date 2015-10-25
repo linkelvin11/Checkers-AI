@@ -246,15 +246,18 @@ void Board::makeSingleMove(Move* move) {
 }
 
 int Board::alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent, int alpha, int beta, int depth, Move* currentMove, bool maximize){
-    if (depth == 0)
-        return currentMove->board->score(maxPlayer); // replace with score;
-    if (!currentMove->board->legalMoves(currentPlayer,currentMove->nextMoves)){
-        if (currentPlayer == maxPlayer)
-            return INT_MIN;
-        return INT_MAX;
+    if (depth == 0){
+        return currentMove->board->score(maxPlayer);
     }
-    if (currentMove->nextMoves[0].isJump)
-        currentMove->board->terminalJumps(currentPlayer,currentMove->nextMoves);
+    if (!currentMove->nextMoves.size()){
+        if (!currentMove->board->legalMoves(currentPlayer,currentMove->nextMoves)){
+            if (currentPlayer == maxPlayer)
+                return INT_MIN;
+            return INT_MAX;
+        }
+        if (currentMove->nextMoves[0].isJump)
+            currentMove->board->terminalJumps(currentPlayer,currentMove->nextMoves);
+    }
     if (maximize){
         int v = INT_MIN;
         for(std::vector<Move>::iterator it = currentMove->nextMoves.begin(); it != currentMove->nextMoves.end(); it++){
