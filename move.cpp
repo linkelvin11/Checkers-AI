@@ -4,8 +4,13 @@
 Move::Move() {
     start[0] = 0;
     start[1] = 0;
+    middle[0] = 0;
+    middle[1] = 0;
     end[0] = 0;
     end[1] = 0;
+}
+Move::~Move() {
+    
 }
 
 Move::Move(int startcol, int startrow, int endcol, int endrow, Board* b) {

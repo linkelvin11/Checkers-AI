@@ -15,6 +15,7 @@ public:
     int middle[2];
     int end[2];
     Move();
+    ~Move();
     Move(int startcol, int startrow, int endcol, int endrow, Board* b); // shifts
     Move(int startcol, int startrow, int midcol, int midrow, int endcol, int endrow, bool Jump, Board* b);
 };

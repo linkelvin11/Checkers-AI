@@ -15,8 +15,23 @@ void Game::play(){
     int moveNumber;
     int col;
     int row;
-    Player* first = new Player(true,true);
-    Player* second = new Player(false,true);
+
+    bool firstAI = false;
+    bool secondAI = false;
+
+    std::string initAI;
+    std::cout<< "Is black a computer? (y/n)\n";
+    std::cin>> initAI;
+    if (initAI[0] == 'y')
+        firstAI = true;
+    std::cout<< "Is white a computer? (y/n)\n";
+    std::cin>> initAI;
+    if (initAI[0] == 'y')
+        secondAI = true;
+
+
+    Player* first = new Player(true,firstAI);
+    Player* second = new Player(false,secondAI);
     Player* currentPlayer = first;
     board->init();
     board->readBoard();
@@ -33,6 +48,11 @@ void Game::play(){
             std::cout << "game over. " << loser << " loses.\n";
             return;
         }
+        if (board->checkJumps(currentPlayer,moves)){
+            board->terminalJumps(currentPlayer,moves);
+            printMoves();
+        }
+        return;
         if (currentPlayer->isComputer)
             moveNumber = rand() % moves.size();
         else for (moveNumber = 1000; moveNumber >= moves.size();) {

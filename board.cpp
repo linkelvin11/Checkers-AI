@@ -172,6 +172,17 @@ bool Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
     return false;
 }
 
+void Board::terminalJumps(Player *p, std::vector<Move> &moves){
+    for (std::vector<Move>::iterator it = moves.begin(); it != moves.end(); it++){
+        if (it->board->jumpsFrom(p,it->end[0],it->end[1],it->nextMoves)){
+            moves.erase(it);
+            it->board->jumpsFrom(p,it->end[0],it->end[1],moves);
+            this->terminalJumps(p,moves);
+            break;
+        }
+    }
+}
+
 void Board::legalMoves(Player *p, std::vector<Move> &moves) {
     if(!checkJumps(p,moves))
         checkMoves(p,moves);
