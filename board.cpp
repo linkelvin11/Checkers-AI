@@ -86,9 +86,6 @@ bool Board::checkJumps(Player *p, std::vector<Move> &moves) {
     }
     if (moves.size() == 0) // check if any jumps were detected
         return false;
-    // for (std::vector<Move>::iterator it = moves.begin(); it != moves.end(); it++){
-    //     it->board->checkJumps(p,it->nextMoves);
-    // }
     return true;
 }
 

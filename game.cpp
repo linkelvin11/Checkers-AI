@@ -6,6 +6,10 @@ Game::Game(){
     board = new Board();
 }
 
+Game::~Game(){
+    delete board;
+}
+
 void Game::play(){
     auto start = std::chrono::high_resolution_clock::now();
     // //float epoch = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -38,7 +42,7 @@ void Game::play(){
     {
         std::cout<<"what is the AI time limit? (float seconds)\n";
         std::cin>>timeLimit;
-        timeLimit = timeLimit * (0.95 * 1e9);
+        timeLimit = timeLimit * (0.49 * 1e9);
         std::cout<<"The time limit is "<<timeLimit<<".\n";
     }
     
@@ -57,6 +61,7 @@ void Game::play(){
     while(true){
         ++moveCtr%2?currentPlayer = first:currentPlayer = second;
         moveCtr%2?opponent = second:opponent = first;
+        std::cout<<"current move: "<<moveCtr<<std::endl;
         if (!board->legalMoves(currentPlayer,moves)){
             board->displayBoard();
             std::string loser;
@@ -87,6 +92,7 @@ void Game::play(){
                 }
 
                 elapsed_time = (std::chrono::high_resolution_clock::now() - start).count();
+                std::cout<<"time elapsed: "<<elapsed_time<<std::endl;
                 elapsed_time = elapsed_time/1e9;
                 
 
@@ -96,8 +102,7 @@ void Game::play(){
 
                 board->makeMove(bestmove);
                 //std::cout<<"Cleaning search tree\n";
-                moves.clear();
-                std::cout<<"time elapsed: "<<elapsed_time<<std::endl;
+                moves.erase(moves.begin(),moves.end());
                 continue;
             }
             moveNumber = rand() % moves.size();

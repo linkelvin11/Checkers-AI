@@ -19,6 +19,7 @@ std::vector<Move> moves;
 
 public:
 Game();
+~Game();
 void play();
 
 void printMoves();
