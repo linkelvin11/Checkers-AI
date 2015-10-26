@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 
 class Game {
 

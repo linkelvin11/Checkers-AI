@@ -6,9 +6,10 @@ class Player
 public:
     int men;
     int king;
-    bool isComputer;
+    bool isComputer = false;
+    bool isIntelligent = false;
 
-    Player(bool first, bool AI);
+    Player(bool first);
 };
 
 #endif

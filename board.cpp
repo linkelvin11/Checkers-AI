@@ -170,7 +170,7 @@ bool Board::jumpsFrom(Player*p, int col, int row, std::vector<Move> &moves) {
     return false;
 }
 
-// warning: terminal jumps assumes only jumps and no shifts in moves
+// warning: terminal jumps assumes only jumps and no shifts in moves vector
 void Board::terminalJumps(Player *p, std::vector<Move> &moves){
     std::vector<Move> currentMoves = moves;
     moves.clear();
@@ -233,7 +233,6 @@ void Board::makeSingleMove(Move* move) {
         board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
         board[move->start[0]][move->start[1]] = 0;
         board[move->middle[0]][move->middle[1]] = 0;
-        //this->copyBoard(move->board);
     }
     else {
         board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
@@ -372,17 +371,42 @@ int Board::score(Player *p){
     int score = 0;
     int omen = (p->men == 1?3:1);
     int oking = (omen == 3?4:2);
+    int mencount = 0;
+    int kingcount = 0;
+    int omencount = 0;
+    int okingcount = 0;
+    int lastrow = 0;
+    int forceable = 0;
     for (int row = 0; row < 4; row++){
+        if (row==0 && p->men == 1){
+            for (int col = 0; col < 8; col+=2){
+                if (board[col][row] == p->men){
+                    lastrow++;
+                }
+            }
+        }
+        else if(row == 3 && p->men == 3){
+            for (int col = 1; col < 8; col+=2){
+                if (board[col][row] == p->men){
+                    lastrow++;
+                }
+            }
+        }
         for (int col = 0; col < 8; col++){
             if (board[col][row] == p->men)
-                score++;
-            if (board[col][row] == p->king)
-                score+=2;
+                mencount++;
+            if (board[col][row] == p->king){
+                mencount++;
+                kingcount++;
+            }
             if (board[col][row] == omen)
-                score--;
-            if (board[col][row] == oking)
-                score-=2;
+                omencount++;
+            if (board[col][row] == oking){
+                omencount++;
+                okingcount++;
+            }
         }
     }
-    return score;
+    score = 1024*(mencount - omencount + 2*(kingcount - okingcount)) + 512*lastrow;
+    return score + (rand() % 512);
 }

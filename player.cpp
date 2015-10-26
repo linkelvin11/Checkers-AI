@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(bool first, bool AI) {
+Player::Player(bool first) {
     if (first) {
         men = 1;
         king = 2;
@@ -9,6 +9,7 @@ Player::Player(bool first, bool AI) {
         men = 3;
         king = 4;
     }
-    isComputer = AI;
+    isComputer = false;
+    isIntelligent = false;
     return;
 }
