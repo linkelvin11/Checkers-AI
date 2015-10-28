@@ -44,6 +44,7 @@ public:
     void displayBoard();
 
     int score(Player *p);
+    int popCount(Player *p);
 };
 
 #endif

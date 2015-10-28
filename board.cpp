@@ -242,9 +242,15 @@ void Board::makeSingleMove(Move* move) {
 }
 
 int Board::alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent, int alpha, int beta, int depth, Move* currentMove, bool maximize){
+    if (std::chrono::high_resolution_clock::now().time_since_epoch().count() > returnTime)
+        return searchComplete = false;
+    
     if (depth == 0){
-        return currentMove->board->score(maxPlayer);
+        if (maxPlayer->isIntelligent)
+            return currentMove->board->score(maxPlayer);
+        return currentMove->board->popCount(maxPlayer);
     }
+
     if (!currentMove->nextMoves.size()){
         if (!currentMove->board->legalMoves(currentPlayer,currentMove->nextMoves)){
             if (currentPlayer == maxPlayer)
@@ -254,6 +260,7 @@ int Board::alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent,
         if (currentMove->nextMoves[0].isJump)
             currentMove->board->terminalJumps(currentPlayer,currentMove->nextMoves);
     }
+
     if (maximize){
         int v = INT_MIN;
         for(std::vector<Move>::iterator it = currentMove->nextMoves.begin(); it != currentMove->nextMoves.end(); it++){
@@ -364,49 +371,76 @@ void Board::readBoard() {
             }
         }
     }
-
 }
 
 int Board::score(Player *p){
     int score = 0;
-    int omen = (p->men == 1?3:1);
-    int oking = (omen == 3?4:2);
-    int mencount = 0;
-    int kingcount = 0;
-    int omencount = 0;
-    int okingcount = 0;
-    int lastrow = 0;
-    int forceable = 0;
+    int pieces = 0;
+    int pmen = 0;
+    int pking = 0;
+    int opieces = 0;
+    int omen = 0;
+    int oking = 0;
+
+    int om = (p->men == 1?3:1);
+    int ok = (om == 3?4:2);
     for (int row = 0; row < 4; row++){
-        if (row==0 && p->men == 1){
-            for (int col = 0; col < 8; col+=2){
-                if (board[col][row] == p->men){
-                    lastrow++;
-                }
-            }
-        }
-        else if(row == 3 && p->men == 3){
-            for (int col = 1; col < 8; col+=2){
-                if (board[col][row] == p->men){
-                    lastrow++;
-                }
-            }
-        }
         for (int col = 0; col < 8; col++){
-            if (board[col][row] == p->men)
-                mencount++;
-            if (board[col][row] == p->king){
-                mencount++;
-                kingcount++;
+            if (board[col][row] == p->men){
+                score+=3;
+                pieces++;
+                pmen++;
             }
-            if (board[col][row] == omen)
-                omencount++;
-            if (board[col][row] == oking){
-                omencount++;
-                okingcount++;
+            if (board[col][row] == p->king){
+                score+=5;
+                pieces++;
+                pking++;
+            }
+            if (board[col][row] == om){
+                score-=3;
+                opieces++;
+                omen++;
+
+            }
+            if (board[col][row] == ok){
+                score-=5;
+                opieces++;
+                oking++;
             }
         }
     }
-    score = 1024*(mencount - omencount + 2*(kingcount - okingcount)) + 512*lastrow;
-    return score + (rand() % 512);
+
+    int piecesLeft = 32 * (pieces + opieces);
+
+    if (pmen+pking == 0)
+        return INT_MIN;
+    if (omen+oking == 0)
+        return INT_MAX;
+    if (pieces > opieces)
+        piecesLeft = -1*piecesLeft;
+
+    int diff = 1024 * score;
+    //score *= 1024;
+    return score + (rand() % 16);
+}
+
+int Board::popCount(Player *p){
+    int score = 0;
+    int omen = (p->men == 1?3:1);
+    int oking = (omen == 3?4:2);
+    for (int row = 0; row < 4; row++){
+        for (int col = 0; col < 8; col++){
+            if (board[col][row] == p->men)
+                score+=3;
+            if (board[col][row] == p->king)
+                score+=5;
+            if (board[col][row] == omen)
+                score-=3;
+            if (board[col][row] == oking)
+                score-=5;
+        }
+    }
+    score *= 1024;
+    //return rand() % 512;
+    return score + (rand() % 16);
 }

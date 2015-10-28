@@ -18,6 +18,7 @@ void Game::play(){
     int moveNumber;
     int col;
     int row;
+    int maxdepth = 0;
     float elapsed_time;
     double timenow;
     Player* first = new Player(true);
@@ -51,7 +52,7 @@ void Game::play(){
     {
         std::cout<<"what is the AI time limit? (float seconds)\n";
         std::cin>>timeLimit;
-        timeLimit = timeLimit * (0.49 * 1e9);
+        timeLimit = timeLimit * (0.99 * 1e9);
         std::cout<<"The time limit is "<<timeLimit<<".\n";
     }
 
@@ -61,13 +62,14 @@ void Game::play(){
     // start game
     while(true){
         // clear screen
-        std::cout<<"\033[2J\033[1;1H";
+        
         ++moveCtr%2?currentPlayer = first:currentPlayer = second;
         moveCtr%2?opponent = second:opponent = first;
         std::cout<<"current move: "<<moveCtr<<std::endl;
 
         // check for moves
         if (!board->legalMoves(currentPlayer,moves)){
+            std::cout<<"\033[2J\033[1;1H";
             board->displayBoard();
             std::string loser;
             currentPlayer == first? loser = "black": loser = "white";
@@ -77,7 +79,7 @@ void Game::play(){
 
         // computer's turn
         if (currentPlayer->isComputer){
-            board->displayBoard();
+            
 
             // find terminal jump moves
             if (moves[0].isJump){
@@ -85,32 +87,37 @@ void Game::play(){
             }
 
             // iterative deepening search w/ alpha beta pruning
-            if (currentPlayer->isIntelligent){
-                Move* bestmove;
-                start = std::chrono::high_resolution_clock::now();
-                returnTime = timeLimit + std::chrono::high_resolution_clock::now().time_since_epoch().count();
-                for (int maxdepth = 1; maxdepth < 20; maxdepth++){
-                    bestmove = this->alphaBeta_init(currentPlayer,opponent,maxdepth);
-                    if (std::chrono::high_resolution_clock::now().time_since_epoch().count() > returnTime){
-                        std::cout<<"searched to depth: "<<maxdepth<<std::endl;
-                        break;
-                    }
+            Move* bestmove;
+            Move* bestmove_tmp;
+            searchComplete = true;
+            start = std::chrono::high_resolution_clock::now();
+            returnTime = timeLimit + std::chrono::high_resolution_clock::now().time_since_epoch().count();
+            for (int depth = 1; depth < 20; depth++){
+                bestmove_tmp = this->alphaBeta_init(currentPlayer,opponent,depth);
+                if (searchComplete){
+                    bestmove = bestmove_tmp;
                 }
-
-                // print search time
-                elapsed_time = (std::chrono::high_resolution_clock::now() - start).count();
-                elapsed_time = elapsed_time/1e9;
-                std::cout<<"search time: "<<elapsed_time<<std::endl;
-
-                // apply move
-                board->makeMove(bestmove);
+                else {
+                    maxdepth = depth;
+                    break;
+                }
             }
-            // choose random move
-            else{
-                moveNumber = rand() % moves.size();
-                board->makeMove(&moves[moveNumber]);
+            //bestmove = this->alphaBeta_init(currentPlayer,opponent,10);
+            std::cout<<"\033[2J\033[1;1H";
+            board->displayBoard();
+            std::cout<<"searched to depth: "<<maxdepth<<std::endl;
+
+            // print search time
+            elapsed_time = (std::chrono::high_resolution_clock::now() - start).count();
+            elapsed_time = elapsed_time/1e9;
+            std::cout<<"search time: "<<elapsed_time<<std::endl;
+            if (elapsed_time > timeLimit){
+                std::cout<<"oops! went over the time limit\n";
+
             }
-            usleep(sleeptime);
+            // apply move
+            board->makeMove(bestmove);
+            //printMoves();
             moves.clear();
         }
 
@@ -180,7 +187,7 @@ Move* Game::alphaBeta_init(Player *maxplayer, Player *minplayer, int maxdepth){
     int v = INT_MIN;
     int alpha = INT_MIN;
     for(std::vector<Move>::iterator it = moves.begin(); it != moves.end(); it++){
-        v = board->alphaBeta(maxplayer,minplayer,maxplayer,INT_MIN,INT_MAX,maxdepth-1,&*it,false);
+        v = it->board->alphaBeta(maxplayer,minplayer,maxplayer,INT_MIN,INT_MAX,maxdepth-1,&*it,false);
         if (v > alpha){
             alpha = v;
             bestmove = &*it;
