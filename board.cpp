@@ -381,6 +381,7 @@ int Board::score(Player *p){
     int opieces = 0;
     int omen = 0;
     int oking = 0;
+    int kingdist = 0;
 
     int om = (p->men == 1?3:1);
     int ok = (om == 3?4:2);
@@ -390,6 +391,22 @@ int Board::score(Player *p){
                 score+=3;
                 pieces++;
                 pmen++;
+                if (col%2){
+                    if (p->men == 1){
+                        kingdist -= 2*(3-row);
+                    }
+                    else {
+                        kingdist -= 2*row + 1;
+                    }
+                }
+                else{
+                    if (p->men == 1){
+                        kingdist -= 2*(3-row) + 1;
+                    }
+                    else{
+                        kingdist -= 2*row;
+                    }
+                }
             }
             if (board[col][row] == p->king){
                 score+=5;
@@ -400,7 +417,22 @@ int Board::score(Player *p){
                 score-=3;
                 opieces++;
                 omen++;
-
+                if (col%2){
+                    if (om == 1){
+                        kingdist += 2*(3-row);
+                    }
+                    else {
+                        kingdist += 2*row + 1;
+                    }
+                }
+                else{
+                    if (om == 1){
+                        kingdist += 2*(3-row) + 1;
+                    }
+                    else{
+                        kingdist += 2*row;
+                    }
+                }
             }
             if (board[col][row] == ok){
                 score-=5;
@@ -410,17 +442,18 @@ int Board::score(Player *p){
         }
     }
 
-    int piecesLeft = 32 * (pieces + opieces);
+    int piecesLeft = 128 * (pieces + opieces);
 
-    if (pmen+pking == 0)
-        return INT_MIN;
-    if (omen+oking == 0)
-        return INT_MAX;
+    // if (pmen+pking == 0)
+    //     return INT_MIN;
+    // if (omen+oking == 0)
+    //     return INT_MAX;
     if (pieces > opieces)
         piecesLeft = -1*piecesLeft;
 
-    int diff = 1024 * score;
-    //score *= 1024;
+    int diff = 131072 * score;
+    kingdist *= 4096;
+    score = diff + kingdist + piecesLeft;
     return score + (rand() % 16);
 }
 

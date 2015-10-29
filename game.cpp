@@ -105,7 +105,7 @@ void Game::play(){
             //bestmove = this->alphaBeta_init(currentPlayer,opponent,10);
             std::cout<<"\033[2J\033[1;1H";
             board->displayBoard();
-            std::cout<<"searched to depth: "<<maxdepth<<std::endl;
+            std::cout<<"searched to depth: "<<maxdepth-1<<std::endl;
 
             // print search time
             elapsed_time = (std::chrono::high_resolution_clock::now() - start).count();
@@ -113,7 +113,6 @@ void Game::play(){
             std::cout<<"search time: "<<elapsed_time<<std::endl;
             if (elapsed_time > timeLimit){
                 std::cout<<"oops! went over the time limit\n";
-
             }
             // apply move
             board->makeMove(bestmove);
