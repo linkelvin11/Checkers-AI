@@ -287,15 +287,15 @@ int Board::alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent,
 const char* Board::uniPiece(int piece) {
     switch(piece) {
         case 0://empty
-            return "\u00B7";
+            return "\e[41m\e[37m\u00B7";
         case 1://black piece
-            return "\u25CE";
+            return "\e[41m\e[30m\u25CF";
         case 2://black king
-            return "\u2654";
-        case 3://red piece
-            return "\u25C9";
-        case 4://red king
-            return "\u265A";
+            return "\e[41m\e[30m\u2654";
+        case 3://white piece
+            return "\e[41m\e[37m\u25CF";
+        case 4://white king
+            return "\e[41m\e[37m\u265A";
     }
 }
 
@@ -312,24 +312,25 @@ void Board::displayBoard() {
     int col = 0;
     int colID = 0;
     int rowID = 7;
-    std::cout << "  ";
+    char reset[20] = "\e[40m\e[37m";
+    std::cout << reset << "  ";
     for(col = 0; col < 8; col++) {
         std::cout << colID++ << " ";
     }
     std::cout << std::endl;
-    char blank[10] = " \u25FB";
+    char blank[10] =  " \e[40m ";//" \u25FB";
     for(row = 3; row > -1; row--) {
-        std::cout << rowID;
+        std::cout << "\e[40m" << rowID;
         for (col = 1; col < 8; col+=2) {
             std::cout << blank << " " << uniPiece(board[col][row]); 
         }
-        std::cout << " " << rowID-- << std::endl << rowID;
+        std::cout << " \e[40m " << rowID-- << std::endl << rowID;
         for (col = 0; col < 8; col+=2) {
             std::cout << " " << uniPiece(board[col][row]) << blank;
         }
-        std::cout << " " << rowID-- << std::endl;
+        std::cout << "\e[40m  " << rowID-- << std::endl;
     }
-    std::cout << "  ";
+    std::cout << reset << "  ";
     for(col = 0, colID = 0; col < 8; col++) {
         std::cout << colID++ << " ";
     }
