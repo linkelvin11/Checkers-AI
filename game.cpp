@@ -21,6 +21,7 @@ void Game::play(){
     int maxdepth = 0;
     float elapsed_time;
     double timenow;
+    std::string moveString;
     Player* first = new Player(true);
     Player* second = new Player(false);
     Player* currentPlayer = first;
@@ -50,10 +51,20 @@ void Game::play(){
     }
     if (first->isComputer || second->isComputer)
     {
-        std::cout<<"what is the AI time limit? (float seconds)\n";
-        std::cin>>timeLimit;
-        timeLimit = timeLimit * (0.99 * 1e9);
-        std::cout<<"The time limit is "<<timeLimit<<".\n";
+        while(true){
+            try{
+                std::cout<<"What is the AI time limit? (float seconds)\n";
+                std::cin>>initAI;
+                timeLimit = std::stod(initAI);
+                timeLimit = timeLimit * (0.99 * 1e9);
+                std::cout<<"The time limit is "<<timeLimit<<".\n";
+                break;
+            }
+            catch (const std::invalid_argument& ia) {
+                std::cerr<< "Invalid argument entered for time limit. Try again.\n";
+            }
+        }
+        
     }
 
     board->init();
@@ -69,7 +80,6 @@ void Game::play(){
 
         // check for moves
         if (!board->legalMoves(currentPlayer,moves)){
-            std::cout<<"\033[2J\033[1;1H";
             board->displayBoard();
             std::string loser;
             currentPlayer == first? loser = "black": loser = "white";
@@ -103,7 +113,6 @@ void Game::play(){
                 }
             }
             //bestmove = this->alphaBeta_init(currentPlayer,opponent,10);
-            std::cout<<"\033[2J\033[1;1H";
             board->displayBoard();
             std::cout<<"searched to depth: "<<maxdepth-1<<std::endl;
 
@@ -116,20 +125,28 @@ void Game::play(){
             }
             // apply move
             board->makeMove(bestmove);
-            //printMoves();
             moves.clear();
         }
 
         // human's turn
         else {
             // get player's move & apply it
-            do{
-                std::cout<<"\033[2J\033[1;1H";
-                board->displayBoard();
-                printMoves();
-                std::cout << "type in which move you'd like\n";
-                std::cin >> moveNumber;
-            } while (moveNumber > moves.size());
+            board->displayBoard();
+            printMoves();
+            while(true){
+                try{
+                    std::cout << "type in which move you'd like\n";
+                    std::cin>>moveString;
+                    moveNumber = std::stod(moveString);
+                    if (moveNumber < moves.size() && moveNumber >= 0)
+                        break;
+                    else
+                        std::cerr<< "Invalid argument entered for the move number. Try again.\n";
+                }
+                catch (const std::invalid_argument& ia) {
+                    std::cerr<< "Invalid argument entered for the move number. Try again.\n";
+                }
+            }
             board->makeSingleMove(&moves[moveNumber]);
 
             // check if there is a multi-jump possibility
@@ -139,15 +156,22 @@ void Game::play(){
                 moves.clear();
                 // keep taking turns if you haven't finished jumping
                 while (board->jumpsFrom(currentPlayer,col,row,moves)) {
-                    do {
-                        std::cout<<"\033[2J\033[1;1H";
-                        std::cout<<"current move: "<<moveCtr<<std::endl;
-                        board->displayBoard();
-                        std::cout << "You just jumped! Jump again!\n";
-                        printMoves();
-                        std::cin >> moveNumber;
+                    board->displayBoard();
+                    printMoves();
+                    while(true){
+                        try{
+                            std::cout << "You just jumped! Jump again!\n";
+                            std::cin>>moveString;
+                            moveNumber = std::stod(moveString);
+                            if (moveNumber < moves.size() && moveNumber >= 0)
+                                break;
+                            else
+                                std::cerr<< "Invalid argument entered for the move number. Try again.\n";
+                        }
+                        catch (const std::invalid_argument& ia) {
+                            std::cerr<< "Invalid argument entered for the move number. Try again.\n";
+                        }
                     }
-                    while (moveNumber >= moves.size());
                     board->makeSingleMove(&moves[moveNumber]);
                     col = moves[moveNumber].end[0];
                     row = moves[moveNumber].end[1];

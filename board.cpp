@@ -308,6 +308,7 @@ void Board::copyBoard(Board* src){
 }
 
 void Board::displayBoard() {
+    std::cout<<"\033[2J\033[1;1H";
     int row = 0;
     int col = 0;
     int colID = 0;
