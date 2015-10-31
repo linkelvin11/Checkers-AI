@@ -4,6 +4,7 @@ This project was completed in partial requirement for ECE469 Artificial Intellig
 
 <!-- MarkdownTOC -->
 
+- [System Requirements](#system-requirements)
 - [How to Play](#how-to-play)
 	- [Starting the game](#starting-the-game)
 	- [Specifying an Opening Board Position](#specifying-an-opening-board-position)
@@ -11,6 +12,12 @@ This project was completed in partial requirement for ECE469 Artificial Intellig
 
 <!-- /MarkdownTOC -->
 
+## System Requirements
+
+This program requires to following to build and play:
+
+* g++ with support for std=c++11
+* A linux system with a terminal that supports both utf-8 encoding and rendering of ANSI/VT100 escape sequences
 
 ## How to Play
 
@@ -30,7 +37,6 @@ Would you like to read in a file?
 ```
 
 An example input file is given below:
-
 ```
 y
 n
@@ -66,6 +72,6 @@ An example input file is given below. Each line represents a row on the checkerb
 ```
 ### Playing the Game
 
-The board consists of 8 columns and 8 rows, each numbered 1-7. When it is a human player's turn, multiple moves will be listed. These moves have the format `(startcol,startrow),(endcol,endrow)`.  Type in the number of the move you'd like to apply and the game will process the move accordingly.
+The board consists of 8 columns and 8 rows, each numbered 0-7. When it is a human player's turn, multiple moves will be listed. These moves have the format `(startcol,startrow),(endcol,endrow)`.  Type in the number of the move you'd like to apply and the game will process the move accordingly.
 
 In the case of multiple jumps, the game will prompt you for each segment of the jump. Enter the moves in the same manner.

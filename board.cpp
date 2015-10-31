@@ -374,8 +374,12 @@ void Board::readBoard() {
 }
 
 int Board::score(Player *p){
-    int score = 0;
+    int pval = 4;
+    int kval = 7;
+
+    int diff = 0;
     int pieces = 0;
+    int piecesLeft;
     int pmen = 0;
     int pking = 0;
     int opieces = 0;
@@ -388,7 +392,7 @@ int Board::score(Player *p){
     for (int row = 0; row < 4; row++){
         for (int col = 0; col < 8; col++){
             if (board[col][row] == p->men){
-                score+=3;
+                diff+=pval;
                 pieces++;
                 pmen++;
                 if (col%2){
@@ -409,12 +413,12 @@ int Board::score(Player *p){
                 }
             }
             if (board[col][row] == p->king){
-                score+=5;
+                diff+=kval;
                 pieces++;
                 pking++;
             }
             if (board[col][row] == om){
-                score-=3;
+                diff-=pval;
                 opieces++;
                 omen++;
                 if (col%2){
@@ -435,25 +439,36 @@ int Board::score(Player *p){
                 }
             }
             if (board[col][row] == ok){
-                score-=5;
+                diff-=kval;
                 opieces++;
                 oking++;
             }
         }
     }
 
-    int piecesLeft = 128 * (pieces + opieces);
+    // terminal states
+    if (pieces == 0)
+        return INT_MIN;
+    if (opieces == 0)
+        return INT_MAX;
 
-    // if (pmen+pking == 0)
-    //     return INT_MIN;
-    // if (omen+oking == 0)
-    //     return INT_MAX;
-    if (pieces > opieces)
-        piecesLeft = -1*piecesLeft;
+    // try to trade more aggressively near endgame & if winning
+    if (diff > 0){
+        piecesLeft = -2*(pieces + opieces);
+        if (piecesLeft != 0)
+            piecesLeft *= 24/piecesLeft;
+    }
+    // don't try to play defensively
+    else
+        piecesLeft = 0;
 
-    int diff = 131072 * score;
+    // prioritize having more pieces
+    diff *= 262144;
+
+    // prioritize getting kings
     kingdist *= 4096;
-    score = diff + kingdist + piecesLeft;
+
+    int score = diff + kingdist + piecesLeft;
     return score + (rand() % 16);
 }
 
@@ -474,6 +489,5 @@ int Board::popCount(Player *p){
         }
     }
     score *= 1024;
-    //return rand() % 512;
     return score + (rand() % 16);
 }
