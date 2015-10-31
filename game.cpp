@@ -92,8 +92,11 @@ void Game::play(){
             
 
             // find terminal jump moves
-            if (moves[0].isJump){
-                board->terminalJumps(currentPlayer,moves);
+            for (int i = 0; i < moves.size(); i++){
+                if (moves[i].isJump){
+                    board->terminalJumps(currentPlayer,moves);
+                    break;
+                }
             }
 
             // iterative deepening search w/ alpha beta pruning
@@ -147,7 +150,7 @@ void Game::play(){
                     std::cerr<< "Invalid argument entered for the move number. Try again.\n";
                 }
             }
-            board->makeSingleMove(&moves[moveNumber]);
+            board->makeMove(&moves[moveNumber]);
 
             // check if there is a multi-jump possibility
             if (moves[moveNumber].isJump) {
@@ -172,7 +175,7 @@ void Game::play(){
                             std::cerr<< "Invalid argument entered for the move number. Try again.\n";
                         }
                     }
-                    board->makeSingleMove(&moves[moveNumber]);
+                    board->makeMove(&moves[moveNumber]);
                     col = moves[moveNumber].end[0];
                     row = moves[moveNumber].end[1];
                     moves.clear();

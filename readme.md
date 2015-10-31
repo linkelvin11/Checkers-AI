@@ -9,6 +9,7 @@ This project was completed in partial requirement for ECE469 Artificial Intellig
 	- [Starting the game](#starting-the-game)
 	- [Specifying an Opening Board Position](#specifying-an-opening-board-position)
 	- [Playing the Game](#playing-the-game)
+- [References](#references)
 
 <!-- /MarkdownTOC -->
 
@@ -75,3 +76,7 @@ An example input file is given below. Each line represents a row on the checkerb
 The board consists of 8 columns and 8 rows, each numbered 0-7. When it is a human player's turn, multiple moves will be listed. These moves have the format `(startcol,startrow),(endcol,endrow)`.  Type in the number of the move you'd like to apply and the game will process the move accordingly.
 
 In the case of multiple jumps, the game will prompt you for each segment of the jump. Enter the moves in the same manner.
+
+## References
+
+http://tim.hibal.org/blog/playing-checkers-with-minimax/

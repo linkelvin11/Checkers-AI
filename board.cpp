@@ -179,7 +179,7 @@ void Board::terminalJumps(Player *p, std::vector<Move> &moves){
 
 void Board::recurseJumps(Player*p, std::vector<Move> &currentMoves, std::vector<Move> &moves){
     for (std::vector<Move>::iterator it = currentMoves.begin(); it != currentMoves.end(); it++){
-        if (it->board->jumpsFrom(p,it->end[0],it->end[1],it->nextMoves)){
+        if (it->isJump && it->board->jumpsFrom(p,it->end[0],it->end[1],it->nextMoves)){
             recurseJumps(p,it->nextMoves,moves);
         }
         else {
@@ -196,39 +196,43 @@ bool Board::legalMoves(Player *p, std::vector<Move> &moves) {
     return false;
 }
 
-void Board::makeMove(int start[], int middle[], int end[], bool isJump) {
-    board[end[0]][end[1]] = board[start[0]][start[1]];
-    board[start[0]][start[1]] = 0;
+bool Board::makeMove(int start[], int middle[], int end[], bool isJump) {
     if (isJump){
         board[end[0]][end[1]] = board[start[0]][start[1]];
         board[start[0]][start[1]] = 0;
         board[middle[0]][start[0]] = 0;
     }
-    this->kingMe(end[0],end[1]);
+    else{
+        board[end[0]][end[1]] = board[start[0]][start[1]];
+        board[start[0]][start[1]] = 0;
+    }
+    if (this->kingMe(end[0],end[1]))
+        return true;
+    return false;
 }
 
-void Board::kingMe(int col, int row){
+bool Board::kingMe(int col, int row){
     if (col%2){
-        if(row == 3 && board[col][row] == 1)
+        if(row == 3 && board[col][row] == 1){
             board[col][row] = 2;
+            return true;
+        }
     }
     else if(row == 0 && board[col][row] == 3){
         board[col][row] = 4;
+        return true;
     }
+    return false;
 }
 
-void Board::makeMove(Move* move) {
-    if (move->isJump){
-        this->copyBoard(move->board);
-    }
-    else {
-        board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
-        board[move->start[0]][move->start[1]] = 0;
-    }
-    this->kingMe(move->end[0],move->end[1]);
+bool Board::makeMove(Move* move) {
+    this->copyBoard(move->board);
+    if (this->kingMe(move->end[0],move->end[1]))
+        return true;
+    return false;
 }
 
-void Board::makeSingleMove(Move* move) {
+bool Board::makeSingleMove(Move* move) {
     if (move->isJump){
         board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
         board[move->start[0]][move->start[1]] = 0;
@@ -238,7 +242,9 @@ void Board::makeSingleMove(Move* move) {
         board[move->end[0]][move->end[1]] = board[move->start[0]][move->start[1]];
         board[move->start[0]][move->start[1]] = 0;
     }
-    this->kingMe(move->end[0],move->end[1]);
+    if (this->kingMe(move->end[0],move->end[1]))
+        return true;
+    return false;
 }
 
 int Board::alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent, int alpha, int beta, int depth, Move* currentMove, bool maximize){
@@ -257,8 +263,11 @@ int Board::alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent,
                 return INT_MIN;
             return INT_MAX;
         }
-        if (currentMove->nextMoves[0].isJump)
-            currentMove->board->terminalJumps(currentPlayer,currentMove->nextMoves);
+        for (int i = 0; i < currentMove->nextMoves.size(); i++){
+            if (currentMove->nextMoves[i].isJump)
+                currentMove->board->terminalJumps(currentPlayer,currentMove->nextMoves);
+            break;
+        }
     }
 
     if (maximize){

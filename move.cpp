@@ -57,10 +57,11 @@ Move::Move(int startcol, int startrow, int midcol, int midrow, int endcol, int e
     middle[1] = midrow;
     end[0] = endcol;
     end[1] = endrow;
-    isJump = Jump;
     board = new Board();
     board->copyBoard(b);
-    board->makeSingleMove(this);
+    isJump = Jump;
+    if (board->makeSingleMove(this))
+        isJump = false;
 }
 
 void Move::killTree(){

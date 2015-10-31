@@ -29,10 +29,10 @@ public:
     void terminalJumps(Player *p, std::vector<Move> &moves);
     void recurseJumps(Player*p, std::vector<Move> &currentMoves, std::vector<Move> &moves);
     bool legalMoves(Player *p, std::vector<Move> &moves);
-    void kingMe(int row, int col);
-    void makeMove(int start[], int middle[], int end[], bool isJump);
-    void makeMove(Move *move);
-    void makeSingleMove(Move *move);
+    bool kingMe(int row, int col);
+    bool makeMove(int start[], int middle[], int end[], bool isJump);
+    bool makeMove(Move *move);
+    bool makeSingleMove(Move *move);
 
     int alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent, int alpha, int beta, int depth, Move* currentMove, bool maximize);
     
