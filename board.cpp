@@ -376,8 +376,8 @@ void Board::readBoard() {
 }
 
 int Board::score(Player *p){
-    int pval = 4;
-    int kval = 7;
+    int pval = 3;
+    int kval = 5;
 
     int diff = 0;
     int pieces = 0;
@@ -388,6 +388,7 @@ int Board::score(Player *p){
     int omen = 0;
     int oking = 0;
     int kingdist = 0;
+    int boardpos = 0;
 
     int om = (p->men == 1?3:1);
     int ok = (om == 3?4:2);
@@ -396,7 +397,7 @@ int Board::score(Player *p){
             if (board[col][row] == p->men){
                 diff+=pval;
                 pieces++;
-                pmen++;
+                pmen+=boardWeight[col][row];
                 if (col%2){
                     if (p->men == 1){
                         kingdist -= 2*(3-row);
@@ -417,12 +418,12 @@ int Board::score(Player *p){
             if (board[col][row] == p->king){
                 diff+=kval;
                 pieces++;
-                pking++;
+                pking+=boardWeight[col][row];
             }
             if (board[col][row] == om){
                 diff-=pval;
                 opieces++;
-                omen++;
+                omen+=boardWeight[col][row];
                 if (col%2){
                     if (om == 1){
                         kingdist += 2*(3-row);
@@ -443,7 +444,7 @@ int Board::score(Player *p){
             if (board[col][row] == ok){
                 diff-=kval;
                 opieces++;
-                oking++;
+                oking+=boardWeight[col][row];
             }
         }
     }
@@ -455,22 +456,33 @@ int Board::score(Player *p){
         return INT_MAX;
 
     // try to trade more aggressively near endgame & if winning
-    if (diff > 0){
-        piecesLeft = -2*(pieces + opieces);
+    if (pieces > opieces){
+        piecesLeft = -8*(pieces + opieces);
         if (piecesLeft != 0)
             piecesLeft *= 24/piecesLeft;
     }
-    // don't try to play defensively
+    // play more defensively if behind
     else
-        piecesLeft = 0;
+        piecesLeft = 8*(pieces - opieces);
 
     // prioritize having more pieces
-    diff *= 262144;
+    diff *= 131072;
 
     // prioritize getting kings
     kingdist *= 4096;
 
-    int score = diff + kingdist + piecesLeft;
+    // weight based on board position (favor borders)
+    boardpos = 0
+        + pval* (pmen - omen) 
+        + kval * (pking - oking)
+        ;
+    boardpos /= 2;
+
+    int score = diff
+        + kingdist
+        + piecesLeft
+        + boardpos
+        ;
     return score + (rand() % 16);
 }
 
