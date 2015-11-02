@@ -296,7 +296,7 @@ int Board::alphaBeta(Player *maxPlayer, Player *currentPlayer, Player *opponent,
 const char* Board::uniPiece(int piece) {
     switch(piece) {
         case 0://empty
-            return "\e[41m\e[37m\u00B7";
+            return "\e[41m\e[37m ";//\u00B7";
         case 1://black piece
             return "\e[41m\e[30m\u25CF";
         case 2://black king
@@ -334,11 +334,11 @@ void Board::displayBoard() {
         for (col = 1; col < 8; col+=2) {
             std::cout << blank << " " << uniPiece(board[col][row]); 
         }
-        std::cout << " \e[40m " << rowID-- << std::endl << rowID;
+        std::cout << " "<< reset << " " << rowID-- << std::endl << rowID;
         for (col = 0; col < 8; col+=2) {
             std::cout << " " << uniPiece(board[col][row]) << blank;
         }
-        std::cout << "\e[40m  " << rowID-- << std::endl;
+        std::cout << reset << "  " << rowID-- << std::endl;
     }
     std::cout << reset << "  ";
     for(col = 0, colID = 0; col < 8; col++) {
@@ -472,13 +472,13 @@ int Board::score(Player *p){
     }
     // play more defensively if behind
     else
-        piecesLeft = 8*(pieces - opieces);
+        piecesLeft = 8*(pieces + opieces);
 
     // prioritize having more pieces
     diff *= 131072;
 
     // prioritize getting kings
-    kingdist *= 4096;
+    kingdist *= 2048;
 
     // weight based on board position (favor borders)
     boardpos = 0
