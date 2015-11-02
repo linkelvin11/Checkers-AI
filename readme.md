@@ -23,7 +23,6 @@ make;
 	- [Move Data Structure and Legal Moves](#move-data-structure-and-legal-moves)
 	- [Iterative Deepening Search with Alpha-Beta Pruning](#iterative-deepening-search-with-alpha-beta-pruning)
 	- [Heuristic Function](#heuristic-function)
-- [References](#references)
 
 <!-- /MarkdownTOC -->
 
@@ -151,8 +150,3 @@ The other determining factors used in the heuristic are listed below in order of
 2. number of pieces left of the board (if losing)/ negative number of pieces left on the board (if winning)
 3. the current position of the pieces on the board (prioritizes board edges)
 4. a pseudorandom element to help break ties if all else fails
-
-## References
-
-* https://en.wikipedia.org/wiki/Draughts
-* http://tim.hibal.org/blog/playing-checkers-with-minimax/
